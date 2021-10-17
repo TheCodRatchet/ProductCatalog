@@ -1,0 +1,17 @@
+{% extends 'app.twig' %}
+{% block content %}
+    <form action="/products" method="post">
+        <label for="name">Product name:</label>
+        <input id="name" type="text" name="name">
+
+        <label for="category">Product category:</label>
+        <input id="category" type="text" name="category">
+
+        <label for="amount">Product amount:</label>
+        <input id="amount" type="text" name="amount">
+
+        <button type="submit">Create</button>
+    </form>
+    (<a href="/">Back</a>)
+{% endblock %}
+

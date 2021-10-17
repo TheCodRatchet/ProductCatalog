@@ -1,0 +1,10 @@
+{% extends 'app.twig' %}
+{% block content %}
+    <h1>{{ product.name }}</h1>
+    <form method="post" product="/products/{{ product.id }}/edit">
+        <label for="name">New product name:</label>
+        <input id="name" type="text" name="name">
+        <button type="submit">Edit</button>
+    </form>
+    (<a href="/">Back</a>)
+{% endblock %}

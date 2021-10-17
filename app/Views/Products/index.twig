@@ -1,0 +1,14 @@
+{% extends 'app.twig' %}
+{% block content %}
+    <h1>Products</h1> (<a href="/products/create">Create</a>)
+    <ul>
+        {% for product in products.products %}
+            <li>
+                <a href="/products/{{ product.id }} ?>">
+                    {{ product.name }}
+                    (<a href="/products/{{ product.id }}/edit">Edit</a>)
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
