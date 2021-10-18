@@ -11,21 +11,6 @@ class Product
     private string $createdAt;
     private string $editedAt;
 
-
-    public const CATEGORY_PHONES = 'phones';
-    public const CATEGORY_COMPONENTS = 'components';
-    public const CATEGORY_LAPTOPS = 'laptops';
-    public const CATEGORY_MONITORS = 'monitors';
-    public const CATEGORY_PERIPHERALS = 'peripherals';
-
-    private const STATUSES = [
-        self::CATEGORY_PHONES,
-        self::CATEGORY_COMPONENTS,
-        self::CATEGORY_LAPTOPS,
-        self::CATEGORY_MONITORS,
-        self::CATEGORY_PERIPHERALS,
-    ];
-
     public function __construct(string $id, string $name, string $category, int $amount, string $createdAt, string $editedAt)
     {
         $this->id = $id;

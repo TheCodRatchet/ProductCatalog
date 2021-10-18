@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Category;
+use App\Models\Collections\CategoriesCollection;
 use App\View;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -9,14 +11,12 @@ require_once 'vendor/autoload.php';
 session_start();
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-    $r->addRoute('GET', '/', 'ProductsController@index');
-
     $r->addRoute('GET', '/products', 'ProductsController@index');
     $r->addRoute('GET', '/products/create', 'ProductsController@create');
-    $r->addRoute('POST', '/products', 'ProductsController@store');
+    $r->addRoute('POST', '/products/', 'ProductsController@store');
 
-    $r->addRoute('POST', '/products/{id}', 'ProductsController@delete');
-    $r->addRoute('GET', '/products/{id}', 'ProductsController@show');
+    $r->addRoute('POST', '/products/{id}/delete', 'ProductsController@delete');
+    $r->addRoute('GET', '/products/{id}/delete', 'ProductsController@deleteForm');
 
     $r->addRoute('POST', '/products/{id}/edit', 'ProductsController@edit');
     $r->addRoute('GET', '/products/{id}/edit', 'ProductsController@editForm');
@@ -26,7 +26,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/register', 'AuthController@showRegisterForm');
     $r->addRoute('POST', '/register', 'AuthController@register');
 
-    $r->addRoute('GET', '/login', 'AuthController@showLoginForm');
+    $r->addRoute('GET', '/', 'AuthController@showLoginForm');
     $r->addRoute('POST', '/login', 'AuthController@login');
 
     $r->addRoute('POST', '/logout', 'AuthController@logout');

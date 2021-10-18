@@ -41,24 +41,24 @@ class AuthController
 
     public function showLoginForm(): View
     {
-        if (Authorisation::loggedIn()) Redirect::url('/');
+        if (Authorisation::loggedIn()) Redirect::url('/products');
 
         return new View('Users/login.twig', []);
     }
 
     public function login()
     {
-        if (Authorisation::loggedIn()) Redirect::url('/');
+        if (Authorisation::loggedIn()) Redirect::url('/products');
 
         $user = $this->usersRepository->getByEmail($_POST['email']);
 
         if ($user !== null && password_verify($_POST['password'], $user->getPassword())) {
             $_SESSION['id'] = $user->getId();
-            Redirect::url('/');
+            Redirect::url('/products');
             exit;
         }
 
-        Redirect::url('/login');;
+        Redirect::url('/products');;
     }
 
     public function logout()

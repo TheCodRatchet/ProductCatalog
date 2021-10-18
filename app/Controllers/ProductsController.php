@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\Category;
+use App\Models\Collections\CategoriesCollection;
 use App\Models\Product;
 use App\Redirect;
 use App\Repositories\Products\ProductsRepository;
@@ -13,10 +15,17 @@ use Ramsey\Uuid\Uuid;
 class ProductsController
 {
     private ProductsRepository $productsRepository;
+    private CategoriesCollection $categoriesCollection;
 
     public function __construct()
     {
         $this->productsRepository = new MysqlProductsRepository();
+        $this->categoriesCollection = new CategoriesCollection([
+            new Category("phone"),
+            new Category("components"),
+            new Category("laptops"),
+            new Category("monitors"),
+            new Category("peripherals")]);
     }
 
     public function index(): View
@@ -24,13 +33,16 @@ class ProductsController
         $products = $this->productsRepository->getAll($_GET);
 
         return new View('Products/index.twig', [
-            'products' => $products
+            'products' => $products,
+            'categories' => $this->categoriesCollection
         ]);
     }
 
     public function create(): View
     {
-        return new View('Products/create.twig', []);
+        return new View('Products/create.twig', [
+            'categories' => $this->categoriesCollection
+        ]);
     }
 
     public function store()
@@ -39,13 +51,13 @@ class ProductsController
 
         $this->productsRepository->save($product);
 
-        Redirect::url('/');
+        Redirect::url('/products');
     }
 
     public function delete(array $vars)
     {
         $id = $vars['id'] ?? null;
-        if ($id == null) Redirect::url('/');
+        if ($id == null) Redirect::url('/products');
 
         $product = $this->productsRepository->getOne($id);
 
@@ -53,19 +65,19 @@ class ProductsController
             $this->productsRepository->delete($product);
         }
 
-        Redirect::url('/');
+        Redirect::url('/products');
     }
 
-    public function show(array $vars): View
+    public function deleteForm(array $vars): View
     {
         $id = $vars['id'] ?? null;
-        if ($id == null) Redirect::url('/');;
+        if ($id == null) Redirect::url('/products');;
 
         $product = $this->productsRepository->getOne($id);
 
-        if ($product === null) Redirect::url('/');;
+        if ($product === null) Redirect::url('/products');;
 
-        return new View('Products/show.twig', [
+        return new View('Products/delete.twig', [
             'product' => $product
         ]);
     }
@@ -73,7 +85,7 @@ class ProductsController
     public function edit(array $vars)
     {
         $id = $vars['id'] ?? null;
-        if ($id == null) Redirect::url('/');
+        if ($id == null) Redirect::url('/products');
 
         $product = $this->productsRepository->getOne($id);
 
@@ -81,20 +93,21 @@ class ProductsController
             $this->productsRepository->edit($product);
         }
 
-        Redirect::url('/');
+        Redirect::url('/products');
     }
 
     public function editForm(array $vars): View
     {
         $id = $vars['id'] ?? null;
-        if ($id == null) Redirect::url('/');;
+        if ($id == null) Redirect::url('/products');;
 
         $product = $this->productsRepository->getOne($id);
 
-        if ($product === null) Redirect::url('/');;
+        if ($product === null) Redirect::url('/products');;
 
         return new View('Products/edit.twig', [
-            'product' => $product
+            'product' => $product,
+            'categories' => $this->categoriesCollection
         ]);
     }
 }

@@ -2,12 +2,24 @@
 {% block content %}
     <h1>Products</h1> (<a href="/products/create">Create</a>)
     <ul>
+        <form method="get" action="/products?category={{ category.name }}">
+            <label for="category">Product category:</label>
+            <select id="category" name="category">
+                {% for category in categories.categories %}
+                    <option value="{{ category.name }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Filter products</button>
+        </form>
+
+        (<a href="/products">Reset filter</a>)
+        <br>
         {% for product in products.products %}
             <li>
-                <a href="/products/{{ product.id }} ?>">
-                    {{ product.name }}
-                    (<a href="/products/{{ product.id }}/edit">Edit</a>)
-                </a>
+                {{ product.name }}
+                (<a href="/products/{{ product.id }}/edit">Edit</a>)
+                (<a href="/products/{{ product.id }}/delete">Delete</a>)
+                <br>
             </li>
         {% endfor %}
     </ul>

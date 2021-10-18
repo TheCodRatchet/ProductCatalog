@@ -4,6 +4,7 @@ namespace App\Repositories\Products;
 
 use App\Models\Collections\ProductsCollection;
 use App\Models\Product;
+use Carbon\Carbon;
 use PDO;
 use PDOException;
 
@@ -27,9 +28,19 @@ class MysqlProductsRepository implements ProductsRepository
         }
     }
 
-    public function getAll(): ProductsCollection
+    public function getAll(array $filters = []): ProductsCollection
     {
-        $statement = $this->connection->query("SELECT * FROM products");
+        $sql = "SELECT * FROM products";
+        $params = [];
+
+        if (isset($filters['category'])) {
+            $sql .= " WHERE category = ?";
+            $params[] = $filters['category'];
+        }
+
+        $statement = $this->connection->prepare($sql);
+        $statement->execute($params);
+
         $products = $statement->fetchAll(PDO::FETCH_ASSOC);
         $collection = new ProductsCollection();
 
@@ -86,10 +97,12 @@ class MysqlProductsRepository implements ProductsRepository
 
     public function edit(Product $product): void
     {
-        $post = $_POST['name'];
-        $sql = "UPDATE products SET name='$post' WHERE id = ?";
+        $postName = $_POST['name'];
+        $category = $_POST['category'];
+        $postAmount = $_POST['amount'];
+        $editedAt = Carbon::now();
+        $sql = "UPDATE products SET name='$postName', category='$category', amount='$postAmount', editedAt='$editedAt' WHERE id = ?";
         $statement = $this->connection->prepare($sql);
         $statement->execute([$product->getId()]);
-
     }
 }

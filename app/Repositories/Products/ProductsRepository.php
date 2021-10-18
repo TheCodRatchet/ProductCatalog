@@ -7,7 +7,7 @@ use App\Models\Collections\ProductsCollection;
 
 interface ProductsRepository
 {
-    public function getAll(): ProductsCollection;
+    public function getAll(array $filters = []): ProductsCollection;
 
     public function getOne(string $id): ?Product;
 

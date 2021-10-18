@@ -3,15 +3,19 @@
     <form action="/products" method="post">
         <label for="name">Product name:</label>
         <input id="name" type="text" name="name">
-
+        <br>
         <label for="category">Product category:</label>
-        <input id="category" type="text" name="category">
-
+        <select id="category" name="category">
+            {% for category in categories.categories %}
+                <option value="{{ category.name }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+        <br>
         <label for="amount">Product amount:</label>
         <input id="amount" type="text" name="amount">
-
+        <br>
         <button type="submit">Create</button>
     </form>
-    (<a href="/">Back</a>)
+    (<a href="/products">Back</a>)
 {% endblock %}
 
