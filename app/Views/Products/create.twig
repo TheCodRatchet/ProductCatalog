@@ -1,9 +1,11 @@
 {% extends 'app.twig' %}
 {% block content %}
     <form action="/products" method="post">
+
         <label for="name">Product name:</label>
         <input id="name" type="text" name="name">
         <br>
+
         <label for="category">Product category:</label>
         <select id="category" name="category">
             {% for category in categories.categories %}
@@ -11,10 +13,22 @@
             {% endfor %}
         </select>
         <br>
+
         <label for="amount">Product amount:</label>
         <input id="amount" type="text" name="amount">
         <br>
+
+        <label for="tag">Tag category:</label>
+            {% for tag in tags.tags %}
+                <div>
+                    <input type="checkbox" id="{{ tag.id }}" name="tag[]" value="{{ tag.id }}">
+                    <label for="{{ tag.id }}">{{ tag.name }}</label>
+                </div>
+            {% endfor %}
+        <br>
+
         <button type="submit">Create</button>
+
     </form>
     (<a href="/products">Back</a>)
 {% endblock %}

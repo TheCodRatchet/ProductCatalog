@@ -2,9 +2,11 @@
 {% block content %}
     <h1>{{ product.name }}</h1>
     <form method="post" action="/products/{{ product.id }}/edit">
+
         <label for="name">New product name:</label>
         <input id="name" type="text" name="name">
         <br>
+
         <label for="category">Product category:</label>
         <select id="category" name="category">
             {% for category in categories.categories %}
@@ -12,10 +14,22 @@
             {% endfor %}
         </select>
         <br>
+
+        <label for="tag">Tag category:</label>
+        {% for tag in tags.tags %}
+            <div>
+                <input type="checkbox" id="{{ tag.id }}" name="tag[]" value="{{ tag.id }}">
+                <label for="{{ tag.id }}">{{ tag.name }}</label>
+            </div>
+        {% endfor %}
+        <br>
+
         <label for="amount">New product amount:</label>
         <input id="amount" type="text" name="amount">
         <br>
+
         <button type="submit">Edit</button>
+
     </form>
     (<a href="/products">Back</a>)
 {% endblock %}

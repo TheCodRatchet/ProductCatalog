@@ -6,7 +6,7 @@ use App\Models\Category;
 
 class CategoriesCollection
 {
-    private array $categories;
+    private array $categories = [];
 
     public function __construct(array $categories = [])
     {

@@ -74,7 +74,7 @@ class MysqlProductsRepository implements ProductsRepository
         );
     }
 
-    public function save(Product $product): void
+    public function save(Product $product, array $tags): void
     {
         $sql = "INSERT INTO products (id, name, category, amount, createdAt, editedAt) VALUES (?, ?, ?, ?, ?, ?)";
         $statement = $this->connection->prepare($sql);
@@ -86,6 +86,15 @@ class MysqlProductsRepository implements ProductsRepository
             $product->getCreatedAt(),
             $product->getEditedAt()
         ]);
+
+        foreach ($tags as $tag) {
+            $sql = "INSERT INTO product_tag (product_id, tag_id) VALUES (?, ?)";
+            $statement = $this->connection->prepare($sql);
+            $statement->execute([
+                $product->getId(),
+                $tag
+            ]);
+        }
     }
 
     public function delete(Product $product): void
@@ -93,10 +102,18 @@ class MysqlProductsRepository implements ProductsRepository
         $sql = "DELETE FROM products WHERE id = ?";
         $statement = $this->connection->prepare($sql);
         $statement->execute([$product->getId()]);
+
+        $sql = "DELETE FROM product_tag WHERE product_id = ?";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([$product->getId()]);
     }
 
-    public function edit(Product $product): void
+    public function edit(Product $product, array $tags): void
     {
+        $sql = "DELETE FROM product_tag WHERE product_id = ?";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([$product->getId()]);
+
         $postName = $_POST['name'];
         $category = $_POST['category'];
         $postAmount = $_POST['amount'];
@@ -104,5 +121,14 @@ class MysqlProductsRepository implements ProductsRepository
         $sql = "UPDATE products SET name='$postName', category='$category', amount='$postAmount', editedAt='$editedAt' WHERE id = ?";
         $statement = $this->connection->prepare($sql);
         $statement->execute([$product->getId()]);
+
+        foreach ($tags as $tag) {
+            $sql = "INSERT INTO product_tag (product_id, tag_id) VALUES (?, ?)";
+            $statement = $this->connection->prepare($sql);
+            $statement->execute([
+                $product->getId(),
+                $tag
+            ]);
+        }
     }
 }

@@ -6,7 +6,7 @@ use App\Models\User;
 
 class UsersCollection
 {
-    private array $users;
+    private array $users = [];
 
     public function __construct(array $users = [])
     {

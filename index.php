@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Category;
-use App\Models\Collections\CategoriesCollection;
 use App\View;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -13,13 +11,23 @@ session_start();
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/products', 'ProductsController@index');
     $r->addRoute('GET', '/products/create', 'ProductsController@create');
-    $r->addRoute('POST', '/products/', 'ProductsController@store');
+    $r->addRoute('POST', '/products', 'ProductsController@store');
 
     $r->addRoute('POST', '/products/{id}/delete', 'ProductsController@delete');
     $r->addRoute('GET', '/products/{id}/delete', 'ProductsController@deleteForm');
 
     $r->addRoute('POST', '/products/{id}/edit', 'ProductsController@edit');
     $r->addRoute('GET', '/products/{id}/edit', 'ProductsController@editForm');
+
+    $r->addRoute('GET', '/tags', 'TagsController@index');
+    $r->addRoute('GET', '/tags/create', 'TagsController@create');
+    $r->addRoute('POST', '/tags', 'TagsController@store');
+
+    $r->addRoute('POST', '/tags/{id}/delete', 'TagsController@delete');
+    $r->addRoute('GET', '/tags/{id}/delete', 'TagsController@deleteForm');
+
+    $r->addRoute('POST', '/tags/{id}/edit', 'TagsController@edit');
+    $r->addRoute('GET', '/tags/{id}/edit', 'TagsController@editForm');
 
     $r->addRoute('GET', '/users', 'UsersController@index');
 

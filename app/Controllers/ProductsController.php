@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Redirect;
 use App\Repositories\Products\ProductsRepository;
 use App\Repositories\Products\MysqlProductsRepository;
+use App\Repositories\Tags\MysqlTagsRepository;
+use App\Repositories\Tags\TagsRepository;
 use App\View;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
@@ -16,6 +18,7 @@ class ProductsController
 {
     private ProductsRepository $productsRepository;
     private CategoriesCollection $categoriesCollection;
+    private TagsRepository $tagsRepository;
 
     public function __construct()
     {
@@ -26,22 +29,28 @@ class ProductsController
             new Category("laptops"),
             new Category("monitors"),
             new Category("peripherals")]);
+        $this->tagsRepository = new MysqlTagsRepository();
     }
 
     public function index(): View
     {
         $products = $this->productsRepository->getAll($_GET);
+        $tags = $this->tagsRepository->getAll();
 
         return new View('Products/index.twig', [
             'products' => $products,
-            'categories' => $this->categoriesCollection
+            'categories' => $this->categoriesCollection,
+            'tags' => $tags
         ]);
     }
 
     public function create(): View
     {
+        $tags = $this->tagsRepository->getAll();
+
         return new View('Products/create.twig', [
-            'categories' => $this->categoriesCollection
+            'categories' => $this->categoriesCollection,
+            'tags' => $tags
         ]);
     }
 
@@ -49,7 +58,7 @@ class ProductsController
     {
         $product = new Product(Uuid::uuid4(), $_POST['name'], $_POST['category'], $_POST['amount'], Carbon::now(), Carbon::now());
 
-        $this->productsRepository->save($product);
+        $this->productsRepository->save($product, $_POST['tag']);
 
         Redirect::url('/products');
     }
@@ -90,7 +99,7 @@ class ProductsController
         $product = $this->productsRepository->getOne($id);
 
         if ($product !== null) {
-            $this->productsRepository->edit($product);
+            $this->productsRepository->edit($product, $_POST['tag']);
         }
 
         Redirect::url('/products');
@@ -102,12 +111,14 @@ class ProductsController
         if ($id == null) Redirect::url('/products');;
 
         $product = $this->productsRepository->getOne($id);
+        $tags = $this->tagsRepository->getAll();
 
         if ($product === null) Redirect::url('/products');;
 
         return new View('Products/edit.twig', [
             'product' => $product,
-            'categories' => $this->categoriesCollection
+            'categories' => $this->categoriesCollection,
+            'tags' => $tags
         ]);
     }
 }

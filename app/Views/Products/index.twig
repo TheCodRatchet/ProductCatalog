@@ -2,6 +2,7 @@
 {% block content %}
     <h1>Products</h1> (<a href="/products/create">Create</a>)
     <ul>
+
         <form method="get" action="/products?category={{ category.name }}">
             <label for="category">Product category:</label>
             <select id="category" name="category">
@@ -12,7 +13,10 @@
             <button type="submit">Filter products</button>
         </form>
 
+
+
         (<a href="/products">Reset filter</a>)
+
         <br>
         {% for product in products.products %}
             <li>

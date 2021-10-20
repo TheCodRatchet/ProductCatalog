@@ -1,7 +1,7 @@
 {% extends 'app.twig' %}
 {% block content %}
     <h1>{{ product.name }}</h1>
-    <form method="post" product="/products/{{ product.id }} ?>">
+    <form method="post" action="/products/{{ product.id }}/delete?>">
         <button type="submit" onclick="return confirm('Are you sure You want to delete this Product?')">delete</button>
     </form>
     (<a href="/products">Back</a>)

@@ -1,0 +1,8 @@
+{% extends 'app.twig' %}
+{% block content %}
+    <h1>{{ tag.name }}</h1>
+    <form method="post" action="/tags/{{ tag.id }}/delete?>">
+        <button type="submit" onclick="return confirm('Are you sure You want to delete this Tag?')">delete</button>
+    </form>
+    (<a href="/tags">Back</a>)
+{% endblock %}

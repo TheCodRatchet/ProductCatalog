@@ -6,7 +6,7 @@ use App\Models\Product;
 
 class ProductsCollection
 {
-    private array $products;
+    private array $products = [];
 
     public function __construct(array $products = [])
     {

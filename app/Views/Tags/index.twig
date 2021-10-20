@@ -1,0 +1,14 @@
+{% extends 'app.twig' %}
+{% block content %}
+    <h1>Tags</h1> (<a href="/tags/create">Create</a>)
+    <ul>
+        {% for tag in tags.tags %}
+            <li>
+                {{ tag.name }}
+                (<a href="/tags/{{ tag.id }}/edit">Edit</a>)
+                (<a href="/tags/{{ tag.id }}/delete">Delete</a>)
+                <br>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

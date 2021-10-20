@@ -1,0 +1,11 @@
+{% extends 'app.twig' %}
+{% block content %}
+    <h1>{{ tag.name }}</h1>
+    <form method="post" action="/tags/{{ tag.id }}/edit">
+        <label for="name">New tag name:</label>
+        <input id="name" type="text" name="name">
+        <br>
+        <button type="submit">Edit</button>
+    </form>
+    (<a href="/tags">Back</a>)
+{% endblock %}

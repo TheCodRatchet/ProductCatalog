@@ -11,7 +11,9 @@ interface ProductsRepository
 
     public function getOne(string $id): ?Product;
 
-    public function save(Product $product): void;
+    public function save(Product $product, array $tags): void;
 
     public function delete(Product $product): void;
+
+    public function edit(Product $product, array $tags): void;
 }

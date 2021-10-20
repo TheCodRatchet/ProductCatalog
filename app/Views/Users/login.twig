@@ -1,13 +1,23 @@
 {% extends 'app.twig' %}
 {% block content %}
     <form action="/login" method="post">
-        <label for="email">E-Mail:</label>
-        <input id="email" type="email" name="email">
-        <br>
-        <label for="password">Password:</label>
-        <input id="password" type="password" name="password">
-        <br>
-        <button type="submit">Login</button>
+        <div class="wrapper fadeInDown">
+            <div id="formContent">
+                <!-- Tabs Titles -->
+
+                <!-- Login Form -->
+                <form>
+                    <input type="email" id="email" class="fadeIn second" name="email" placeholder="email">
+                    <input type="password" id="password" class="fadeIn third" name="password" placeholder="password">
+                    <input type="submit" class="fadeIn fourth" value="Log In">
+                </form>
+
+                <!-- Remind Passowrd -->
+                <div id="formFooter">
+                    <a class="underlineHover" href="/register">Register</a>
+                </div>
+
+            </div>
+        </div>
     </form>
-    (<a href="/register">Register</a>)
 {% endblock %}
