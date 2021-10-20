@@ -38,10 +38,28 @@ class MysqlProductsRepository implements ProductsRepository
             $params[] = $filters['category'];
         }
 
+        if (isset($filters['tag'])) {
+
+            $params[] = $filters['tag'];
+
+            $sqlTag = "SELECT product_id FROM product_tag WHERE tag_id = ?";
+            $statement = $this->connection->prepare($sqlTag);
+            $statement->execute($params);
+
+            $products = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+            $params = [];
+            $sql .= " WHERE id = ?";
+            foreach ($products as $product) {
+                $params[] = $product['product_id'];
+            }
+        }
+
         $statement = $this->connection->prepare($sql);
         $statement->execute($params);
 
         $products = $statement->fetchAll(PDO::FETCH_ASSOC);
+
         $collection = new ProductsCollection();
 
         foreach ($products as $product) {
@@ -54,6 +72,7 @@ class MysqlProductsRepository implements ProductsRepository
                 $product['editedAt']
             ));
         }
+
         return $collection;
     }
 
