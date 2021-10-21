@@ -22,11 +22,15 @@ class AuthController
 
     public function showRegisterForm(): View
     {
+        if (Authorisation::loggedIn()) Redirect::url('/products');
+
         return new View('Users/register.twig', []);
     }
 
     public function register()
     {
+        if (Authorisation::loggedIn()) Redirect::url('/products');
+
         $this->usersRepository->save(
             new User(
                 Uuid::uuid4(),

@@ -1,8 +1,10 @@
 <?php
 
+use App\Middlewares\AuthMiddleware;
 use App\View;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+
 
 require_once 'vendor/autoload.php';
 
@@ -68,6 +70,61 @@ switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
+
+        $middlewares = [
+            'ProductsController@index' => [
+                AuthMiddleware::class
+            ],
+            'ProductsController@create' => [
+                AuthMiddleware::class
+            ],
+            'ProductsController@store' => [
+                AuthMiddleware::class
+            ],
+            'ProductsController@delete' => [
+                AuthMiddleware::class
+            ],
+            'ProductsController@deleteForm' => [
+                AuthMiddleware::class
+            ],
+            'ProductsController@edit' => [
+                AuthMiddleware::class
+            ],
+            'ProductsController@editForm' => [
+                AuthMiddleware::class
+            ],
+            'TagsController@index' => [
+                AuthMiddleware::class
+            ],
+            'TagsController@create' => [
+                AuthMiddleware::class
+            ],
+            'TagsController@store' => [
+                AuthMiddleware::class
+            ],
+            'TagsController@delete' => [
+                AuthMiddleware::class
+            ],
+            'TagsController@deleteForm' => [
+                AuthMiddleware::class
+            ],
+            'TagsController@edit' => [
+                AuthMiddleware::class
+            ],
+            'TagsController@editForm' => [
+                AuthMiddleware::class
+            ],
+            'UsersController@index' => [
+                AuthMiddleware::class
+            ]
+        ];
+
+        if (array_key_exists($handler, $middlewares)) {
+            foreach ($middlewares[$handler] as $middleware) {
+                (new $middleware)->handle();
+            }
+        }
+
 
         [$controller, $method] = explode('@', $handler);
         $controller = "App\Controllers\\" . $controller;

@@ -48,8 +48,8 @@ class MysqlProductsRepository implements ProductsRepository
 
             $products = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-            $params = [];
-            $sql .= " WHERE id = ?";
+            $sql .= " WHERE id IN ()";
+
             foreach ($products as $product) {
                 $params[] = $product['product_id'];
             }
