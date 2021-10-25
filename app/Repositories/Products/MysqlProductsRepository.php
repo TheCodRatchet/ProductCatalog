@@ -2,11 +2,11 @@
 
 namespace App\Repositories\Products;
 
+use App\Connection;
 use App\Models\Collections\ProductsCollection;
 use App\Models\Product;
 use Carbon\Carbon;
 use PDO;
-use PDOException;
 
 class MysqlProductsRepository implements ProductsRepository
 {
@@ -14,18 +14,7 @@ class MysqlProductsRepository implements ProductsRepository
 
     public function __construct()
     {
-        $host = '127.0.0.1';
-        $db = 'products_catalog_app';
-        $user = 'root';
-        $pass = 'Ratchet140298';
-
-        $dsn = "mysql:host=$host;dbname=$db;charset=UTF8";
-
-        try {
-            $this->connection = new PDO($dsn, $user, $pass);
-        } catch (PDOException $e) {
-            throw new PDOException($e->getMessage(), (int)$e->getCode());
-        }
+        $this->connection = Connection::configure();
     }
 
     public function getAll(array $filters = []): ProductsCollection
@@ -42,13 +31,13 @@ class MysqlProductsRepository implements ProductsRepository
 
             $params[] = $filters['tag'];
 
-            $sqlTag = "SELECT product_id FROM product_tag WHERE tag_id = ?";
+            $sqlTag = "SELECT product_id FROM products_tags WHERE tag_id = ?";
             $statement = $this->connection->prepare($sqlTag);
             $statement->execute($params);
 
             $products = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-            $sql .= " WHERE id IN ()";
+            $sql .= " WHERE id = ?";
 
             foreach ($products as $product) {
                 $params[] = $product['product_id'];
@@ -72,7 +61,6 @@ class MysqlProductsRepository implements ProductsRepository
                 $product['editedAt']
             ));
         }
-
         return $collection;
     }
 
@@ -107,7 +95,7 @@ class MysqlProductsRepository implements ProductsRepository
         ]);
 
         foreach ($tags as $tag) {
-            $sql = "INSERT INTO product_tag (product_id, tag_id) VALUES (?, ?)";
+            $sql = "INSERT INTO products_tags (product_id, tag_id) VALUES (?, ?)";
             $statement = $this->connection->prepare($sql);
             $statement->execute([
                 $product->getId(),
@@ -122,27 +110,24 @@ class MysqlProductsRepository implements ProductsRepository
         $statement = $this->connection->prepare($sql);
         $statement->execute([$product->getId()]);
 
-        $sql = "DELETE FROM product_tag WHERE product_id = ?";
+        $sql = "DELETE FROM products_tags WHERE product_id = ?";
         $statement = $this->connection->prepare($sql);
         $statement->execute([$product->getId()]);
     }
 
-    public function edit(Product $product, array $tags): void
+    public function edit(Product $product, array $tags, string $name, string $category, int $amount): void
     {
-        $sql = "DELETE FROM product_tag WHERE product_id = ?";
+        $sql = "DELETE FROM products_tags WHERE product_id = ?";
         $statement = $this->connection->prepare($sql);
         $statement->execute([$product->getId()]);
 
-        $postName = $_POST['name'];
-        $category = $_POST['category'];
-        $postAmount = $_POST['amount'];
         $editedAt = Carbon::now();
-        $sql = "UPDATE products SET name='$postName', category='$category', amount='$postAmount', editedAt='$editedAt' WHERE id = ?";
+        $sql = "UPDATE products SET name='$name', category='$category', amount='$amount', editedAt='$editedAt' WHERE id = ?";
         $statement = $this->connection->prepare($sql);
         $statement->execute([$product->getId()]);
 
         foreach ($tags as $tag) {
-            $sql = "INSERT INTO product_tag (product_id, tag_id) VALUES (?, ?)";
+            $sql = "INSERT INTO products_tags (product_id, tag_id) VALUES (?, ?)";
             $statement = $this->connection->prepare($sql);
             $statement->execute([
                 $product->getId(),

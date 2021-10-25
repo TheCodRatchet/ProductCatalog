@@ -2,13 +2,12 @@
 
 namespace App\Controllers;
 
+use App\Container;
 use App\Models\Category;
 use App\Models\Collections\CategoriesCollection;
 use App\Models\Product;
 use App\Redirect;
 use App\Repositories\Products\ProductsRepository;
-use App\Repositories\Products\MysqlProductsRepository;
-use App\Repositories\Tags\MysqlTagsRepository;
 use App\Repositories\Tags\TagsRepository;
 use App\View;
 use Carbon\Carbon;
@@ -20,16 +19,15 @@ class ProductsController
     private CategoriesCollection $categoriesCollection;
     private TagsRepository $tagsRepository;
 
-    public function __construct()
+    public function __construct(Container $container)
     {
-        $this->productsRepository = new MysqlProductsRepository();
+        $this->productsRepository = $container->container[ProductsRepository::class];
         $this->categoriesCollection = new CategoriesCollection([
             new Category("phone"),
             new Category("components"),
             new Category("laptops"),
-            new Category("monitors"),
             new Category("peripherals")]);
-        $this->tagsRepository = new MysqlTagsRepository();
+        $this->tagsRepository = $container->container[TagsRepository::class];
     }
 
     public function index(): View
@@ -99,7 +97,7 @@ class ProductsController
         $product = $this->productsRepository->getOne($id);
 
         if ($product !== null) {
-            $this->productsRepository->edit($product, $_POST['tag']);
+            $this->productsRepository->edit($product, $_POST['tag'], $_POST['name'], $_POST['category'], $_POST['amount']);
         }
 
         Redirect::url('/products');

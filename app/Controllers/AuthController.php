@@ -3,9 +3,9 @@
 namespace App\Controllers;
 
 use App\Authorisation;
+use App\Container;
 use App\Models\User;
 use App\Redirect;
-use App\Repositories\Users\MysqlUsersRepository;
 use App\Repositories\Users\UsersRepository;
 use App\View;
 use Ramsey\Uuid\Uuid;
@@ -14,9 +14,9 @@ class AuthController
 {
     private UsersRepository $usersRepository;
 
-    public function __construct()
+    public function __construct(Container $container)
     {
-        $this->usersRepository = new MysqlUsersRepository();
+        $this->usersRepository = $container->container[UsersRepository::class];
     }
 
 

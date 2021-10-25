@@ -15,5 +15,5 @@ interface ProductsRepository
 
     public function delete(Product $product): void;
 
-    public function edit(Product $product, array $tags): void;
+    public function edit(Product $product, array $tags, string $name, string $category, int $amount): void;
 }

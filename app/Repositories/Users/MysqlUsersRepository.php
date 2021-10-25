@@ -3,10 +3,10 @@
 
 namespace App\Repositories\Users;
 
+use App\Connection;
 use App\Models\Collections\UsersCollection;
 use App\Models\User;
 use PDO;
-use PDOException;
 
 class MysqlUsersRepository implements UsersRepository
 {
@@ -14,18 +14,7 @@ class MysqlUsersRepository implements UsersRepository
 
     public function __construct()
     {
-        $host = '127.0.0.1';
-        $db = 'products_catalog_app';
-        $user = 'root';
-        $pass = 'Ratchet140298';
-
-        $dsn = "mysql:host=$host;dbname=$db;charset=UTF8";
-
-        try {
-            $this->connection = new PDO($dsn, $user, $pass);
-        } catch (PDOException $e) {
-            throw new PDOException($e->getMessage(), (int)$e->getCode());
-        }
+        $this->connection = Connection::configure();
     }
 
     public function getAll(): UsersCollection

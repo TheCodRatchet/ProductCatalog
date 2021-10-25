@@ -1,14 +1,29 @@
 <?php
 
+use App\Container;
 use App\Middlewares\AuthMiddleware;
+use App\Repositories\Products\MysqlProductsRepository;
+use App\Repositories\Products\ProductsRepository;
+use App\Repositories\Tags\MysqlTagsRepository;
+use App\Repositories\Tags\TagsRepository;
+use App\Repositories\Users\MysqlUsersRepository;
+use App\Repositories\Users\UsersRepository;
 use App\View;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
-
 
 require_once 'vendor/autoload.php';
 
 session_start();
+
+$container = new Container([
+    TagsRepository::class => new MysqlTagsRepository(),
+    ProductsRepository::class => new MysqlProductsRepository(),
+    UsersRepository::class => new MysqlUsersRepository()
+]);
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/products', 'ProductsController@index');
@@ -49,12 +64,10 @@ function base_path(): string
 
 $httpMethod = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];
-
 if (false !== $pos = strpos($uri, '?')) {
     $uri = substr($uri, 0, $pos);
 }
 $uri = rawurldecode($uri);
-
 $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 
 $loader = new FilesystemLoader(base_path() . '/app/Views');
@@ -70,54 +83,17 @@ switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
+        $middlewares = [];
 
-        $middlewares = [
-            'ProductsController@index' => [
-                AuthMiddleware::class
-            ],
-            'ProductsController@create' => [
-                AuthMiddleware::class
-            ],
-            'ProductsController@store' => [
-                AuthMiddleware::class
-            ],
-            'ProductsController@delete' => [
-                AuthMiddleware::class
-            ],
-            'ProductsController@deleteForm' => [
-                AuthMiddleware::class
-            ],
-            'ProductsController@edit' => [
-                AuthMiddleware::class
-            ],
-            'ProductsController@editForm' => [
-                AuthMiddleware::class
-            ],
-            'TagsController@index' => [
-                AuthMiddleware::class
-            ],
-            'TagsController@create' => [
-                AuthMiddleware::class
-            ],
-            'TagsController@store' => [
-                AuthMiddleware::class
-            ],
-            'TagsController@delete' => [
-                AuthMiddleware::class
-            ],
-            'TagsController@deleteForm' => [
-                AuthMiddleware::class
-            ],
-            'TagsController@edit' => [
-                AuthMiddleware::class
-            ],
-            'TagsController@editForm' => [
-                AuthMiddleware::class
-            ],
-            'UsersController@index' => [
-                AuthMiddleware::class
-            ]
-        ];
+        [$controller, $method] = explode('@', $handler);
+
+        if ($controller != 'AuthController') {
+            $middlewares = [
+                $handler => [
+                    AuthMiddleware::class
+                ]
+            ];
+        }
 
         if (array_key_exists($handler, $middlewares)) {
             foreach ($middlewares[$handler] as $middleware) {
@@ -125,14 +101,15 @@ switch ($routeInfo[0]) {
             }
         }
 
-
-        [$controller, $method] = explode('@', $handler);
         $controller = "App\Controllers\\" . $controller;
-        $controller = new $controller();
+        $controller = new $controller($container);
         $response = $controller->$method($vars);
 
         if ($response instanceof View) {
-            echo $templateEngine->render($response->getTemplate(), $response->getArguments());
+            try {
+                echo $templateEngine->render($response->getTemplate(), $response->getArguments());
+            } catch (LoaderError | RuntimeError | SyntaxError $e) {
+            }
         }
         break;
 }

@@ -2,10 +2,10 @@
 
 namespace App\Controllers;
 
+use App\Container;
 use App\Models\Tag;
 use App\Redirect;
 use App\Repositories\Tags\TagsRepository;
-use App\Repositories\Tags\MysqlTagsRepository;
 use App\View;
 use Ramsey\Uuid\Uuid;
 
@@ -13,9 +13,9 @@ class TagsController
 {
     private TagsRepository $tagsRepository;
 
-    public function __construct()
+    public function __construct(Container $container)
     {
-        $this->tagsRepository = new MysqlTagsRepository();
+        $this->tagsRepository = $container->container[TagsRepository::class];
     }
 
     public function index(): View
@@ -78,7 +78,7 @@ class TagsController
         $tag = $this->tagsRepository->getOne($id);
 
         if ($tag !== null) {
-            $this->tagsRepository->edit($tag);
+            $this->tagsRepository->edit($tag, $_POST['name']);
         }
 
         Redirect::url('/tags');

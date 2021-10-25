@@ -2,10 +2,10 @@
 
 namespace App\Repositories\Tags;
 
+use App\Connection;
 use App\Models\Collections\TagsCollection;
 use App\Models\Tag;
 use PDO;
-use PDOException;
 
 class MysqlTagsRepository implements TagsRepository
 {
@@ -13,27 +13,15 @@ class MysqlTagsRepository implements TagsRepository
 
     public function __construct()
     {
-        $host = '127.0.0.1';
-        $db = 'products_catalog_app';
-        $user = 'root';
-        $pass = 'Ratchet140298';
-
-        $dsn = "mysql:host=$host;dbname=$db;charset=UTF8";
-
-        try {
-            $this->connection = new PDO($dsn, $user, $pass);
-        } catch (PDOException $e) {
-            throw new PDOException($e->getMessage(), (int)$e->getCode());
-        }
+        $this->connection = Connection::configure();
     }
 
-    public function getAll(array $filters = []): TagsCollection
+    public function getAll(): TagsCollection
     {
         $sql = "SELECT * FROM tags";
-        $params = [];
 
         $statement = $this->connection->prepare($sql);
-        $statement->execute($params);
+        $statement->execute();
 
         $tags = $statement->fetchAll(PDO::FETCH_ASSOC);
         $collection = new TagsCollection();
@@ -72,16 +60,22 @@ class MysqlTagsRepository implements TagsRepository
 
     public function delete(Tag $tag): void
     {
-        var_dump("i was here");
         $sql = "DELETE FROM tags WHERE id = ?";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([$tag->getId()]);
+
+        $sql = "DELETE FROM products_tags WHERE tag_id = ?";
         $statement = $this->connection->prepare($sql);
         $statement->execute([$tag->getId()]);
     }
 
-    public function edit(Tag $tag): void
+    public function edit(Tag $tag, string $name): void
     {
-        $postName = $_POST['name'];
-        $sql = "UPDATE tags SET name='$postName' WHERE id = ?";
+        $sql = "DELETE FROM products_tags WHERE tag_id = ?";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([$tag->getId()]);
+
+        $sql = "UPDATE tags SET name='$name' WHERE id = ?";
         $statement = $this->connection->prepare($sql);
         $statement->execute([$tag->getId()]);
     }

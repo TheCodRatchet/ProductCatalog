@@ -3,7 +3,7 @@
 
 namespace App\Controllers;
 
-use App\Repositories\Users\MysqlUsersRepository;
+use App\Container;
 use App\Repositories\Users\UsersRepository;
 use App\View;
 
@@ -11,9 +11,9 @@ class UsersController
 {
     private UsersRepository $usersRepository;
 
-    public function __construct()
+    public function __construct(Container $container)
     {
-        $this->usersRepository = new MysqlUsersRepository();
+        $this->usersRepository = $container->container[UsersRepository::class];
     }
 
     public function index(): View
